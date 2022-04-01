@@ -5,7 +5,7 @@ namespace TestingOpenGL
     {
         public static void Main()
         {
-            Game game = new TestGame(800, 600, "test");
+            Game game = new TestingGame(800, 600, "test");
             game.Run();
         }
     }

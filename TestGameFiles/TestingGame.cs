@@ -2,6 +2,7 @@
 using TestingOpenGL.Rendering.Shaders;
 using TestingOpenGL.Rendering.Display;
 using TestingOpenGL.Rendering.Cameras;
+using TestingOpenGL.TestGame;
 using GLFW;
 using static TestingOpenGL.OpenGL.GL;
 using System;
@@ -13,16 +14,21 @@ using System.Threading.Tasks;
 
 namespace TestingOpenGL
 {
-    class TestGame : Game
+    class TestingGame : Game
     {
         uint vao;
         uint vbo;
 
         Shader shader;
 
+        Player player;
         Camera2D cam;
-        public TestGame(int initialWindowWidth, int initialWindowHeight, string initialWindowTitle) : base(initialWindowWidth, initialWindowHeight, initialWindowTitle)
+        public TestingGame(int initialWindowWidth, int initialWindowHeight, string initialWindowTitle) : base(initialWindowWidth, initialWindowHeight, initialWindowTitle)
         {
+
+            Vector2 playerPos = new Vector2(250, 250);
+            Vector3 playerColor = new Vector3(1, 1, 0);
+            player = new Player(playerPos, playerColor, 8);
         }
 
         protected override void Initialize()
@@ -68,13 +74,13 @@ namespace TestingOpenGL
 
             float[] vertices =
                         {
-                -0.5f, 0.5f, 1f, 0f, 0f, // top left
-                0.5f, 0.5f, 0f, 1f, 0f,// top right
-                -0.5f, -0.5f, 0f, 0f, 1f, // bottom left
+                -0.5f, 0.5f, 1f, 1f, 0f, // top left
+                0.5f, 0.5f, 1f, 1f, 0f,// top right
+                -0.5f, -0.5f, 1f, 1f, 0f, // bottom left
 
-                0.5f, 0.5f, 0f, 1f, 0f,// top right
-                0.5f, -0.5f, 0f, 1f, 1f, // bottom right
-                -0.5f, -0.5f, 0f, 0f, 1f, // bottom left
+                0.5f, 0.5f, 1f, 1f, 0f,// top right
+                0.5f, -0.5f, 1f, 1f, 0f, // bottom right
+                -0.5f, -0.5f, 1f, 1f, 0f, // bottom left
             };
             fixed (float* v = &vertices[0])
             {
@@ -99,18 +105,20 @@ namespace TestingOpenGL
         }
         protected override void Render()
         {
-            glClearColor(0, 0, 0, 0);
+            glClearColor(0.3f, 0.3f, 0.3f, 0);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            Vector2 position = new Vector2(400, 300);
-            Vector2 scale = new Vector2(150, 100);
-            float rotation = MathF.Sin(GameTime.ElapsedSeconds) * MathF.PI * 2f;
+            player.DrawPlayer();
 
-            Matrix4x4 trans = Matrix4x4.CreateTranslation(position.X, position.Y, 0);
-            Matrix4x4 sca = Matrix4x4.CreateScale(scale.X, scale.Y, 1);
-            Matrix4x4 rot = Matrix4x4.CreateRotationZ(rotation);
+            //Vector2 position = new Vector2(400, 300);
+            //Vector2 scale = new Vector2(150, 100);
+            //float rotation = MathF.Sin(GameTime.ElapsedSeconds) * MathF.PI * 2f;
 
-            shader.SetMatrix4x4("model", sca * rot * trans);
+            //Matrix4x4 trans = Matrix4x4.CreateTranslation(position.X, position.Y, 0);
+            //Matrix4x4 sca = Matrix4x4.CreateScale(scale.X, scale.Y, 1);
+            //Matrix4x4 rot = Matrix4x4.CreateRotationZ(rotation);
+
+            shader.SetMatrix4x4("model", player.PlayerScaleMatix * player.PlayerTransMatix);
 
             shader.Use();
             shader.SetMatrix4x4("projection", cam.GetProjectionMatrix());
